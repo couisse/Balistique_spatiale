@@ -38,7 +38,8 @@ protected:
     ///attributes
     sf::Clock m_clock;
     Physics_engine m_engine;
-    sf::VertexArray m_array;
+    sf::VertexArray m_verticesTraj;
+    sf::VertexArray m_verticesAstres;
     size_t current_vertice;
 
 };

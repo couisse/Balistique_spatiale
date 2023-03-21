@@ -1,8 +1,9 @@
 #include "phy_engine.hpp"
 
 Physics_engine::Physics_engine(){
-    m_ship = StarShip(7.*pow(10, 19), Coords(0, 3.8*pow(10,5)), Coords(0, 1));
-    m_astres.emplace_back( 5.972 * pow(10,24), Coords(3.8*pow(10,5), 3.8*pow(10,5)) );
+    m_ship = StarShip(7.*pow(10, 19), Coords(3.8*pow(10,5), 2.5*3.8*pow(10,5)), Coords(0, 1));
+    m_astres.emplace_back( 5.972 * pow(10,21), Coords(2*3.8*pow(10,5), 2.6*3.8*pow(10,5)) );
+    m_astres.emplace_back( 5.972 * pow(10,21), Coords(2*3.8*pow(10,5), 1.4*3.8*pow(10,5)) );
 }
 
 Physics_engine::~Physics_engine(){

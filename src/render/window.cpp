@@ -3,12 +3,22 @@
 Viewer::Viewer(){
     this->create(WIN_MODE, "Balistique spatiale");
     Random::init();
-    m_array.resize(MAX_VERTICES); //allocating the space for all vertices
+
+    //configuring the space for all trajectory vertices
+    m_verticesTraj.resize(MAX_VERTICES);
     for (size_t i =0; i< MAX_VERTICES; i++){
-        m_array[i].color = sf::Color::Green;
+        m_verticesTraj[i].color = sf::Color::Green;
     }
-    m_array.setPrimitiveType(sf::Lines);
+    m_verticesTraj.setPrimitiveType(sf::Lines);
     current_vertice = 0;
+
+    //configuring the space for all astres vertices
+    size_t astres_number = m_engine.getAstres()->size();
+    m_verticesAstres.resize(astres_number * 4);
+    for (size_t i = 0; i< astres_number * 4; i++){
+        m_verticesAstres[i].color = sf::Color::Blue;
+    }
+    m_verticesAstres.setPrimitiveType(sf::Quads);
 }
 
 Viewer::~Viewer(){
@@ -49,21 +59,39 @@ void Viewer::callPhysics(){
 
     log(point_1.x);
     log(point_1.y);
-    log("");
+
     count();
 }
 
 
 void Viewer::newVertice(sf::Vector2f pos){
-    m_array[current_vertice].position = pos;
+    m_verticesTraj[current_vertice].position = pos;
+
+    sf::Vertex current = m_verticesTraj[current_vertice];
     current_vertice++;
-    if (current_vertice>MAX_VERTICES){
+    if (current_vertice>=MAX_VERTICES){
         current_vertice = 0;
     }
 }
 
 void Viewer::rendering(){
+    //getting where astres are
+
+    size_t astres_number = m_engine.getAstres()->size();
+    size_t current = 0;
+    sf::Vector2f projection;
+    for (size_t i = 0; i< astres_number; i++){
+        projection = project(m_engine.getAstres()->at(i).getPosition());
+        m_verticesAstres[current].position = projection + sf::Vector2f(-10, 0);
+        m_verticesAstres[current+1].position = projection + sf::Vector2f(0, -10);
+        m_verticesAstres[current+2].position = projection + sf::Vector2f(10, 0);
+        m_verticesAstres[current+3].position = projection + sf::Vector2f(0, 10);
+        current += 4;
+    }
+
+    //real rendering stuff
     this->clear(sf::Color::Black);
-    this->draw(m_array);
+    this->draw(m_verticesTraj);
+    this->draw(m_verticesAstres);
     this->display();
 }
