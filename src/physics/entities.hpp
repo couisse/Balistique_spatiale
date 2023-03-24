@@ -1,7 +1,7 @@
 #ifndef ENTITIES_HPP_INCLUDED
 #define ENTITIES_HPP_INCLUDED
 
-#include "../utils/vector.hpp"
+#include "trajectories.hpp"
 
 class Entity {
 
@@ -20,10 +20,13 @@ public:
 
 
 class Astre: public Entity {
+protected:
+    Orbit m_orbit;
 
 public:
     Astre() {}
-    Astre(double weight, Coords pos): Entity(weight, pos) {}
+    Astre(double weight, Coords pos, Orbit path): Entity(weight, pos), m_orbit(path) {}
+    inline void orbit(size_t time) {m_position = m_orbit.calculatePosition(time);}
 };
 
 

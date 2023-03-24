@@ -6,6 +6,7 @@
 #include <SFML/System.hpp>
 
 #include "consts.hpp"
+#include "macros.hpp"
 
 
 //those typedef lets mutate easily the dimensions of the space.

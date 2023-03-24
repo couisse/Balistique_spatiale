@@ -1,7 +1,8 @@
 #ifndef MACROS_HPP_INCLUDED
 #define MACROS_HPP_INCLUDED
 
-
+///standards macros
+#define _USE_MATH_DEFINES //constants defined in <cmath>
 
 #ifdef DBG
 ///Debug configuration
@@ -9,7 +10,13 @@
 #include <iostream>
 #include <vector>
 
-#define log(x) {std::cout << x << std::endl;}
+#define minLogPriority 0
+//0 - steps per frame
+//1 - position of the View
+//2 - position of Starship
+//3 - orbital position of Astres
+
+#define log(x, priority) { if (priority <= minLogPriority) {std::cout << x << std::endl;} }
 
 class Count{
 public:
@@ -24,7 +31,7 @@ inline void resetCount() { Count::counter = 0; }
 
 ///Other config
 
-#define log(x) {}
+#define log(x, y) {}
 #define count() {}
 #define getCount() {}
 #define resetCount() {}

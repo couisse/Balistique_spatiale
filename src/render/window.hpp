@@ -36,11 +36,15 @@ protected:
 
 
     ///attributes
+    //generics
     sf::Clock m_clock;
+    //physics
     Physics_engine m_engine;
+    //rendering-related
     sf::VertexArray m_verticesTraj;
     sf::VertexArray m_verticesAstres;
     size_t current_vertice;
+    sf::View m_view;
 
 };
 

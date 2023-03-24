@@ -1,15 +1,19 @@
 #include "phy_engine.hpp"
 
 Physics_engine::Physics_engine(){
-    m_ship = StarShip(7.*pow(10, 19), Coords(3.8*pow(10,5), 2.5*3.8*pow(10,5)), Coords(0, 1));
-    m_astres.emplace_back( 5.972 * pow(10,21), Coords(2*3.8*pow(10,5), 2.6*3.8*pow(10,5)) );
-    m_astres.emplace_back( 5.972 * pow(10,21), Coords(2*3.8*pow(10,5), 1.4*3.8*pow(10,5)) );
+    m_ship = uploadSettings("", &m_astres);
 }
 
 Physics_engine::~Physics_engine(){
 }
 
 Movement Physics_engine::step(){
+    this->stepAstres();
+    m_time += dt;
+    return this->stepShip();
+}
+
+Movement Physics_engine::stepShip(){
     Movement ship_travel;
     //getting last position
     ship_travel.start = m_ship.getPosition();
@@ -27,6 +31,12 @@ Movement Physics_engine::step(){
     ship_travel.stop = m_ship.getPosition();
 
     return ship_travel;
+}
+
+void Physics_engine::stepAstres(){
+    for (size_t i = 0; i<m_astres.size(); i++){
+        m_astres[i].orbit(m_time);
+    }
 }
 
 

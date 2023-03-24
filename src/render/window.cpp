@@ -19,6 +19,10 @@ Viewer::Viewer(){
         m_verticesAstres[i].color = sf::Color::Blue;
     }
     m_verticesAstres.setPrimitiveType(sf::Quads);
+
+    //configuring the view
+    m_view.reset(sf::FloatRect(0, 0, WIN_MODE.width, WIN_MODE.height));
+    this->setView(m_view);
 }
 
 Viewer::~Viewer(){
@@ -35,19 +39,43 @@ void Viewer::play(){
         while (m_clock.getElapsedTime() < TIME_PER_FRAME){
             this->callPhysics();
         }
-        log(getCount()); //debugging stuff
+
+        log("Number of steps:", 0) //debugging stuff
+        log(getCount(), 0);
         resetCount();
-        log("---------------");
+        log("---------------", 0);
     }
 }
 
 void Viewer::manageEvents(){
+    //winfow events
     sf::Event event;
     while (this->pollEvent(event)){
         if (event.type==sf::Event::Closed){
             this->close();
         }
     }
+
+    //moving the view
+    sf::Vector2f offset(0,0);
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)){
+        offset.y = -10;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)){
+        offset.y = 10;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)){
+        offset.x = -10;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)){
+        offset.x = 10;
+    }
+    m_view.setCenter(m_view.getCenter() + offset);
+    this->setView(m_view);
+
+    log("View position:", 1);
+    log(m_view.getCenter().x, 1);
+    log(m_view.getCenter().y, 1);
 }
 
 void Viewer::callPhysics(){
@@ -57,8 +85,9 @@ void Viewer::callPhysics(){
     this->newVertice(point_1);
     this->newVertice(point_2);
 
-    log(point_1.x);
-    log(point_1.y);
+    log("Starship position:", 2);
+    log(point_1.x, 2);
+    log(point_1.y, 2);
 
     count();
 }
@@ -67,7 +96,6 @@ void Viewer::callPhysics(){
 void Viewer::newVertice(sf::Vector2f pos){
     m_verticesTraj[current_vertice].position = pos;
 
-    sf::Vertex current = m_verticesTraj[current_vertice];
     current_vertice++;
     if (current_vertice>=MAX_VERTICES){
         current_vertice = 0;
