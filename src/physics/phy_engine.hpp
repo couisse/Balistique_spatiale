@@ -3,28 +3,39 @@
 
 #include "../files/files_interaction.hpp"
 #include "entities.hpp"
+#include "ship_commands.hpp"
+#include "../render/trajectory_vertices.hpp"
 
-class Physics_engine {
+enum PhyException {Crash};
+
+class PhysicsEngine {
 
 protected:
-    std::vector<Astre> m_astres;
+    //real attributes
+    SharedRessource<std::vector<Astre>> m_astres;
     StarShip m_ship;
-    size_t m_time;
+    //relative to current simulation
+    ShipCommands* m_shipCommands;
+    VisualTrajectory* m_buffer;
+    size_t m_stepBufferCounter;
+    double m_time;
 
     //internal physics calculations
     Coords gravityAcceleration(const Astre* puller);
-    Movement stepShip();
-    void stepAstres();
-
+    void moveShip();
+    void moveAstres();
 
 public:
-    Physics_engine();
-    ~Physics_engine();
 
-    Movement step();
+    PhysicsEngine();
+    ~PhysicsEngine();
+
+    Coords simulate(ShipCommands* commands, VisualTrajectory* target);
 
     //access to Astres array
-    inline std::vector<Astre>* getAstres() {return &m_astres;}
+    inline SharedRessource<std::vector<Astre>>& getAstres() {return m_astres;}
+    //access to StarShip
+    inline StarShip* getStarship() {return &m_ship;}
 };
 
 #endif // PHY_ENGINE_HPP_INCLUDED

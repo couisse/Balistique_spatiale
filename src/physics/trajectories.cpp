@@ -7,7 +7,7 @@ Orbit::Orbit(Coords center, double radius, double realSpeed, double initialAngle
     m_initial = initialAngle;
 }
 
-Coords Orbit::calculatePosition(size_t time){
+Coords Orbit::calculatePosition(double time){
     if (m_radius == 0) {return m_center;}
 
     double angle = m_arcSpeed * time + m_initial;

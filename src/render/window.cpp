@@ -1,19 +1,14 @@
 #include "window.hpp"
 
-Viewer::Viewer(){
-    this->create(WIN_MODE, "Balistique spatiale");
-    Random::init();
+Viewer::Viewer(PhysicsEngine* engine){
 
-    //configuring the space for all trajectory vertices
-    m_verticesTraj.resize(MAX_VERTICES);
-    for (size_t i =0; i< MAX_VERTICES; i++){
-        m_verticesTraj[i].color = sf::Color::Green;
-    }
-    m_verticesTraj.setPrimitiveType(sf::Lines);
-    current_vertice = 0;
+    m_refEngine = engine;
 
     //configuring the space for all astres vertices
-    size_t astres_number = m_engine.getAstres()->size();
+    m_refEngine->getAstres().lock();
+    size_t astres_number = m_refEngine->getAstres().access().size();
+    m_refEngine->getAstres().unlock();
+
     m_verticesAstres.resize(astres_number * 4);
     for (size_t i = 0; i< astres_number * 4; i++){
         m_verticesAstres[i].color = sf::Color::Blue;
@@ -29,21 +24,15 @@ Viewer::~Viewer(){
 }
 
 void Viewer::play(){
-    sf::Time time;
+    this->create(WIN_MODE, "Balistique spatiale");
     while (this->isOpen()){
         m_clock.restart();
+        log("Calling a frame", 3);
 
         this->manageEvents();
         this->rendering();
 
-        while (m_clock.getElapsedTime() < TIME_PER_FRAME){
-            this->callPhysics();
-        }
-
-        log("Number of steps:", 0) //debugging stuff
-        log(getCount(), 0);
-        resetCount();
-        log("---------------", 0);
+        sf::sleep(TIME_PER_FRAME-m_clock.getElapsedTime());
     }
 }
 
@@ -53,6 +42,8 @@ void Viewer::manageEvents(){
     while (this->pollEvent(event)){
         if (event.type==sf::Event::Closed){
             this->close();
+        }else if (event.type == sf::Event::Resized){
+            m_view.setSize(sf::Vector2f(event.size.width, event.size.height));
         }
     }
 
@@ -72,44 +63,31 @@ void Viewer::manageEvents(){
     }
     m_view.setCenter(m_view.getCenter() + offset);
     this->setView(m_view);
-
-    log("View position:", 1);
-    log(m_view.getCenter().x, 1);
-    log(m_view.getCenter().y, 1);
-}
-
-void Viewer::callPhysics(){
-    Movement resulting = m_engine.step();
-    sf::Vector2f point_1 = project(resulting.start);
-    sf::Vector2f point_2 = project(resulting.stop);
-    this->newVertice(point_1);
-    this->newVertice(point_2);
-
-    log("Starship position:", 2);
-    log(point_1.x, 2);
-    log(point_1.y, 2);
-
-    count();
 }
 
 
-void Viewer::newVertice(sf::Vector2f pos){
-    m_verticesTraj[current_vertice].position = pos;
+VisualTrajectory* Viewer::newTrajectory(){
+    m_trajectories.emplace_back(sf::Color::Green);
+    return &m_trajectories[m_trajectories.size()-1];
+}
 
-    current_vertice++;
-    if (current_vertice>=MAX_VERTICES){
-        current_vertice = 0;
+void Viewer::clearTrajectories(){
+    for (size_t i = 0; i < m_trajectories.size(); i++){
+        m_trajectories[i].getVertices().lock(); //locking everyone to make sure it is no more used
     }
+    m_trajectories.clear();
 }
 
 void Viewer::rendering(){
     //getting where astres are
 
-    size_t astres_number = m_engine.getAstres()->size();
+    m_refEngine->getAstres().lock();
+
+    size_t astres_number = m_refEngine->getAstres().access().size();
     size_t current = 0;
     sf::Vector2f projection;
     for (size_t i = 0; i< astres_number; i++){
-        projection = project(m_engine.getAstres()->at(i).getPosition());
+        projection = project(m_refEngine->getAstres().access()[i].getPosition());
         m_verticesAstres[current].position = projection + sf::Vector2f(-10, 0);
         m_verticesAstres[current+1].position = projection + sf::Vector2f(0, -10);
         m_verticesAstres[current+2].position = projection + sf::Vector2f(10, 0);
@@ -117,9 +95,18 @@ void Viewer::rendering(){
         current += 4;
     }
 
+
+    m_refEngine->getAstres().unlock();
+
     //real rendering stuff
     this->clear(sf::Color::Black);
-    this->draw(m_verticesTraj);
+
     this->draw(m_verticesAstres);
+
+    for (size_t i = 0; i < m_trajectories.size(); i++){
+        m_trajectories[i].getVertices().lock();
+        this->draw(m_trajectories[i].getVertices().access());
+        m_trajectories[i].getVertices().unlock();
+    }
     this->display();
 }

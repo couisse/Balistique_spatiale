@@ -5,6 +5,7 @@
 
 #include "../utils/vector.hpp"
 
+
 class Orbit{
 protected:
     Coords m_center;
@@ -15,7 +16,7 @@ protected:
 public:
     Orbit(Coords center = NullCoords, double radius = 0, double realSpeed = 0, double initialAngle = 0);
     ~Orbit() {}
-    Coords calculatePosition(size_t time);
+    Coords calculatePosition(double time);
 };
 
 #endif // TRAJECTORIES_HPP_INCLUDED

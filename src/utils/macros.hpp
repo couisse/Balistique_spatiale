@@ -11,11 +11,10 @@
 #include <vector>
 
 #define minLogPriority 0
-//0 - steps per frame
+//-1 - exceptions
 //1 - position of the View
 //2 - position of Starship
-//3 - orbital position of Astres
-
+//3 - frame call
 #define log(x, priority) { if (priority <= minLogPriority) {std::cout << x << std::endl;} }
 
 class Count{

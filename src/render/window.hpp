@@ -1,23 +1,25 @@
 #ifndef GAME_HPP_INCLUDED
 #define GAME_HPP_INCLUDED
 
-#include <SFML/Graphics.hpp>
-
-#include "../utils/macros.hpp"
-#include "../utils/random.hpp"
 #include "../physics/phy_engine.hpp"
+#include "trajectory_vertices.hpp"
 
-/** \brief Main class of the app
+/** \brief Displayer of the app
  */
 
 class Viewer: public sf::RenderWindow {
 
 public:
-    Viewer();
+    Viewer(PhysicsEngine* engine);
     ~Viewer();
-    /** \brief Main loop of the app
+
+    /** \brief Main loop of the rendering
     */
     void play();
+
+
+    VisualTrajectory* newTrajectory();
+    void clearTrajectories();
 
 protected:
 
@@ -30,21 +32,14 @@ protected:
     */
     void manageEvents();
 
-    void callPhysics();
-
-    void newVertice(sf::Vector2f pos);
-
 
     ///attributes
-    //generics
     sf::Clock m_clock;
-    //physics
-    Physics_engine m_engine;
-    //rendering-related
-    sf::VertexArray m_verticesTraj;
+    std::vector<VisualTrajectory> m_trajectories;
     sf::VertexArray m_verticesAstres;
     size_t current_vertice;
     sf::View m_view;
+    PhysicsEngine* m_refEngine;
 
 };
 

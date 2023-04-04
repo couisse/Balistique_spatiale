@@ -1,10 +1,10 @@
 #include <SFML/Graphics.hpp>
 
-#include "src/render/window.hpp"
+#include "src/app/application.hpp"
 
 int main()
 {
-    Viewer app;
+    Application app;
     app.play();
     return 0;
 }

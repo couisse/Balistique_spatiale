@@ -16,9 +16,11 @@
 typedef sf::Vector2<double> Coords;
 extern const Coords NullCoords;
 
-struct Movement{
+class Movement{
+public:
     Coords start;
     Coords stop;
+    Movement(Coords first = NullCoords, Coords last = NullCoords): start(first), stop(last) {}
 };
 
 inline double dot(const Coords& a, const Coords& b){
@@ -41,5 +43,6 @@ inline sf::Vector2f project(Coords source){
     return sf::Vector2f(source.x * rescaling, source.y*rescaling);
 }
 
+void generateOrientations(double length, double perArc, std::vector<Coords>& container);
 
 #endif // VECTOR_HPP_INCLUDED
